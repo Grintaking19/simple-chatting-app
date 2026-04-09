@@ -1,0 +1,31 @@
+{
+  "name": "simple-chatting-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grintaking19/simple-chatting-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Grintaking19/simple-chatting-app/issues"
+  },
+  "homepage": "https://github.com/Grintaking19/simple-chatting-app#readme",
+  "dependencies": {
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "mongoose": "^9.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
