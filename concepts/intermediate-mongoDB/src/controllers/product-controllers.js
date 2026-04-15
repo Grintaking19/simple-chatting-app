@@ -160,6 +160,36 @@ const insertSampleProducts = async (req, res) => {
 // Aggregation pipeline examples for product stats and category-based queries
 const getProductStats = async (req, res) => {
   try {
+    const stats = await Product.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          products: { $push: "$name" },
+          productCount: { $sum: 1 },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+          inStockCount: { $sum: { $cond: ["$inStock", 1, 0] } },
+          outOfStockCount: { $sum: { $cond: ["$inStock", 0, 1] } },
+        },
+      },
+      {
+        $project: {
+          products: 1,
+          productCount: 1,
+          avgPrice: { $round: ["$avgPrice", 2] },
+          minPrice: 1,
+          maxPrice: 1,
+          inStockCount: 1,
+          outOfStockCount: 1,
+        },
+      },
+      { $sort: { productCount: -1 } },
+    ]);
+    res.status(200).json({
+      success: true,
+      data: stats,
+    });
   } catch (err) {
     handleBadRequest(res, err, "Failed to get product stats");
   }
@@ -174,23 +204,21 @@ const getTagTrends = async (req, res) => {
       // Group by tags and count how many products have each tag
       {
         $group: {
-          _id: "$tags0",
+          _id: "$tags",
           productCount: { $sum: 1 },
           avgPrice: { $avg: "$price" },
         },
       },
-      // Remove the _id and approximate avgPrice to 2 decimal places
+      // Approximate avgPrice to 2 decimal places
       {
         $project: {
-          _id: 0,
+          _id: 1,
           productCount: 1,
           avgPrice: { $round: ["$avgPrice", 2] },
         },
       },
       // Sort by most frequent tags used first
       { $sort: { productCount: -1 } },
-      // limit to top 5 trending tags
-      { $limit: 5 },
     ]);
     res.status(200).json({
       success: true,

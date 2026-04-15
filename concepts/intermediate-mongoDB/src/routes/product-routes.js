@@ -19,7 +19,7 @@ router.post("/add-samples", insertSampleProducts);
 router.get("/stats", getProductStats);
 
 // 2. Tag trends
-router.get("/tags", getTagTrends);
+router.get("/tag-trends", getTagTrends);
 
 // 3. Out of stock revenue loss
 router.get("/out-of-stock-revenue-loss", getOutOfStockRevenueLoss);
