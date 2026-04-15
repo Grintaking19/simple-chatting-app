@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getAllProducts,
-  insertSampleProducts,
+  insertProducts,
   getProductStats,
   getTagTrends,
   getOutOfStockRevenueLoss,
@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 router.get("/", getAllProducts);
-router.post("/add-samples", insertSampleProducts);
+router.post("/add", insertProducts);
 
 // 1. Product statistics
 router.get("/stats", getProductStats);
