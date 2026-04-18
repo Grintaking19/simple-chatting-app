@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat App</title>
+  </head>
+  <body>
+    <h3>Online Users</h3>
+    <ul id="users"></ul>
+    <h3>Messages</h3>
+    <ul id="messages"></ul>
+    <form id="message-form">
+      <input
+        type="text"
+        id="message-input"
+        placeholder="Type a message..."
+        autocomplete="off"
+        required
+      />
+      <button type="submit">Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const usersList = document.getElementById("users");
+      const messagesList = document.getElementById("messages");
+      const messageForm = document.getElementById("message-form");
+      const messageInput = document.getElementById("message-input");
+
+      function addMessage(message) {
+        const li = document.createElement("li");
+        li.textContent = message;
+        messagesList.appendChild(li);
+      }
+
+      // 1. Prompt user for username
+      let userName;
+      do {
+        userName = prompt("Enter your username:");
+      } while (!userName || userName.trim() === "");
+
+      // 2. Emit join event with username
+      socket.emit("join", userName);
+
+      // 3. Listen for messages from the server
+        socket.on("message", (data) => {
+            addMessage(`${data.username}: ${data.message}`);
+        });
+
+        // 4. Listen for user list updates
+        socket.on("userList", (users) => {
+            usersList.innerHTML = ""; // Clear existing list
+            Object.entries(users).forEach(([socketId, username]) => {
+                const li = document.createElement("li");
+                li.textContent = `${username}`;
+                usersList.appendChild(li);
+            });
+        });
+
+        // 5. Handle message form submission
+        messageForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            data = {
+                username: userName,
+                message: message
+            };
+            if (message) {
+                socket.emit("message", data);
+                messageInput.value = "";
+            }
+
+            // Add the message to the sender's chat (bec, the server broadcasts to others, not the sender)
+            addMessage(`You: ${message}`);
+        });
+        
+    </script>
+  </body>
+</html>
